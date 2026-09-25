@@ -1,0 +1,44 @@
+/* AvailabilityCalendar dark-theme overrides for react-datepicker */
+.availability-calendar-wrapper .react-datepicker {
+  background: transparent !important;
+  border: 1px solid rgb(51 65 85 / 0.5) !important;
+  border-radius: 1rem !important;
+  font-family: inherit !important;
+}
+.availability-calendar-wrapper .react-datepicker__header {
+  background: rgb(15 23 42 / 0.5) !important;
+  border-bottom: 1px solid rgb(51 65 85 / 0.5) !important;
+  border-radius: 1rem 1rem 0 0 !important;
+}
+.availability-calendar-wrapper .react-datepicker__current-month,
+.availability-calendar-wrapper .react-datepicker__day-name {
+  color: rgb(148 163 184) !important;
+}
+.availability-calendar-wrapper .react-datepicker__day {
+  color: rgb(226 232 240) !important;
+  border-radius: 0.5rem !important;
+  width: 2.2rem !important;
+  line-height: 2.2rem !important;
+  margin: 1px !important;
+}
+.availability-calendar-wrapper .react-datepicker__day:hover {
+  background: rgb(51 65 85 / 0.5) !important;
+}
+.availability-calendar-wrapper .react-datepicker__day--disabled {
+  color: rgb(71 85 105) !important;
+}
+.availability-calendar-wrapper .rdp-booked {
+  background: rgb(239 68 68 / 0.25) !important;
+  color: rgb(252 165 165) !important;
+  font-weight: 600 !important;
+}
+.availability-calendar-wrapper .rdp-blocked {
+  background: rgb(100 116 139 / 0.3) !important;
+  color: rgb(148 163 184) !important;
+}
+.availability-calendar-wrapper .rdp-available {
+  background: rgb(34 197 94 / 0.08) !important;
+}
+.availability-calendar-wrapper .react-datepicker__navigation-icon::before {
+  border-color: rgb(148 163 184) !important;
+}

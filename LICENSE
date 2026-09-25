@@ -1,0 +1,70 @@
+PROPRIETARY LICENSE - PORTFOLIO REVIEW ONLY
+
+Copyright (c) 2026 Hakeem Shah. All rights reserved.
+
+This repository and all of its contents, including but not limited to source
+code, configuration, documentation, and design (collectively, the "Software"),
+are the proprietary work of Hakeem Shah. The Software is published publicly
+for one purpose only: review and technical evaluation of the author's work.
+
+
+1. GRANT
+
+   You are permitted to view and read the Software for the sole purpose of
+   evaluating the author's technical ability, for example as part of a hiring,
+   contracting, or academic review process.
+
+   No other right or license is granted, whether express, implied, or by
+   estoppel. All rights not expressly granted above are reserved.
+
+
+2. RESTRICTIONS
+
+   Without the prior written consent of the copyright holder, you may not:
+
+   a. Redistribute, publish, share, host, or otherwise make available the
+      Software or any portion of it, in source or compiled form, by any means
+      or medium.
+
+   b. Modify, adapt, translate, reverse engineer, or create derivative works
+      based on the Software or any portion of it.
+
+   c. Use the Software or any portion of it for any commercial purpose,
+      including incorporating it into any product, service, or internal tool,
+      whether or not that product, service, or tool is offered for sale.
+
+   d. Remove, obscure, or alter this notice or any copyright, trademark, or
+      attribution notice contained in the Software.
+
+
+3. THIRD PARTY COMPONENTS
+
+   The Software depends on third party open source packages, each of which is
+   governed by its own license. Nothing in this notice modifies, restricts, or
+   supersedes the terms of those licenses. Dependencies are declared in the
+   package.json files and are not distributed as part of this repository.
+
+
+4. SANITIZED SNAPSHOT
+
+   The Software is a sanitized, standalone snapshot published in accordance
+   with the governance statement in README.md. Proprietary business logic,
+   client configuration, credentials, and infrastructure definitions have been
+   removed. Any company name, address, contact detail, or business figure that
+   remains is fictional placeholder data and does not describe a real entity.
+
+
+5. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN
+   AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
+   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+6. LICENSING ENQUIRIES
+
+   For permission to use the Software in any way not granted above, contact
+   Hakeem Shah <hakeemshah.tech@outlook.com>.

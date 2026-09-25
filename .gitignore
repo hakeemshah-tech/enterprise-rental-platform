@@ -1,0 +1,78 @@
+# ──────────────────────────────────────────────────────────────
+# Master ignore file for the Enterprise Rental Platform monorepo.
+# Applies recursively to client/, server/ and the workspace root.
+# ──────────────────────────────────────────────────────────────
+
+# ── Dependencies ──────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ── Next.js build output & caches ─────────────────────────────
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# ── Secrets: never commit a real environment file ────────────
+# `.env.example` files ARE tracked; everything else is not.
+.env
+.env.local
+.env.*.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ── User-uploaded assets ──────────────────────────────────────
+# The directory is kept (via .gitkeep) but its contents, tenant
+# documents and property photography, must never be published.
+server/uploads/*
+!server/uploads/.gitkeep
+
+# ── Test & coverage output ────────────────────────────────────
+coverage/
+.nyc_output/
+*.lcov
+
+# ── Logs & diagnostics ────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ── Deployment platforms ──────────────────────────────────────
+.vercel
+.netlify
+
+# ── IDE & editor configuration ────────────────────────────────
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.history/
+
+# ── OS cruft ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini

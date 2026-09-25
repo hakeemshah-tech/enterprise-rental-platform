@@ -1,0 +1,149 @@
+name: Next.js + API Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# A new push to the same ref supersedes the run in flight.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  # ────────────────────────────────────────────────────────────
+  # 1. Governance: cheap, fails fast, blocks everything else.
+  # ────────────────────────────────────────────────────────────
+  governance:
+    name: Secret & hygiene audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assert no environment file is tracked
+        run: |
+          TRACKED=$(git ls-files | grep -E '(^|/)\.env($|\.)' | grep -v -E '\.example$' || true)
+          if [ -n "$TRACKED" ]; then
+            echo "::error::Environment file(s) committed to the repository:"
+            echo "$TRACKED"
+            exit 1
+          fi
+          echo "✓ No .env files tracked (only .env.example templates)."
+
+      - name: Assert no user uploads are tracked
+        run: |
+          TRACKED=$(git ls-files -- server/uploads | grep -v '\.gitkeep$' || true)
+          if [ -n "$TRACKED" ]; then
+            echo "::error::Tenant/property assets committed under server/uploads:"
+            echo "$TRACKED"
+            exit 1
+          fi
+          echo "✓ server/uploads holds nothing but .gitkeep."
+
+      - name: Scan source for credential-shaped literals
+        run: |
+          HITS=$(grep -rInE \
+            "(sk_live_[A-Za-z0-9]{8,}|whsec_[A-Za-z0-9]{16,}|xkeysib-[A-Za-z0-9]{16,}|AKIA[0-9A-Z]{16}|mongodb\+srv://[^ \"']*:[^ \"'@]+@)" \
+            client/src server/src 2>/dev/null || true)
+          if [ -n "$HITS" ]; then
+            echo "::error::Hardcoded credential detected in application source:"
+            echo "$HITS"
+            exit 1
+          fi
+          echo "✓ No hardcoded provider credentials in client/src or server/src."
+
+  # ────────────────────────────────────────────────────────────
+  # 2. Presentation layer: ESLint (flat config), tsc, next build.
+  # ────────────────────────────────────────────────────────────
+  client:
+    name: Client - lint, typecheck, build
+    runs-on: ubuntu-latest
+    needs: governance
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: "**/package-lock.json"
+
+      - name: Install workspace dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      # Restore the Next.js compiler cache. Keyed on source so an
+      # unchanged tree reuses the previous build's artifacts; the
+      # restore-keys fall back to the newest cache for this lockfile.
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: client/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('client/src/**/*.ts', 'client/src/**/*.tsx', 'client/src/**/*.css', 'client/next.config.ts', 'client/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
+      # eslint.config.mjs: ESLint 9 flat config via eslint-config-next.
+      - name: ESLint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
+        env:
+          # Build-time placeholders. Nothing here is a secret: anything
+          # NEXT_PUBLIC_* is inlined into the client bundle by design.
+          NEXT_PUBLIC_API_URL: http://localhost:5000/api
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
+          NEXT_TELEMETRY_DISABLED: "1"
+
+      # Runs *after* the build on purpose: `next build` regenerates
+      # next-env.d.ts and .next/types/**, both of which tsconfig.json
+      # includes. Checking afterwards therefore covers the generated
+      # route types too; neither file is committed.
+      - name: TypeScript (strict, no emit)
+        run: npm run typecheck
+
+  # ────────────────────────────────────────────────────────────
+  # 3. Property API: contract tests for the Node.js service.
+  # ────────────────────────────────────────────────────────────
+  api:
+    name: API - contract tests
+    runs-on: ubuntu-latest
+    needs: governance
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: "**/package-lock.json"
+
+      - name: Install workspace dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      # node:test runner: no external test framework, no live database.
+      # See docs/ASSET_PIPELINE.md for the DB-backed integration suite
+      # that a `mongo` service container would unlock.
+      - name: API test suite
+        run: npm test
+        env:
+          NODE_ENV: test
+          JWT_SECRET: test_secret_not_used_outside_ci
